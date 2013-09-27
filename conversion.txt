@@ -1,0 +1,13 @@
+
+nohup python ~/final.py ~/tempsharedsolarlogs/home/alp4/sharedsolarlogs2/raw_sd_cards/UG05  /home/apan2/sqllite/ug05 6 > ~/log.ug05 &
+ nohup python ~/final.py ~/tempsharedsolarlogs/home/alp4/sharedsolarlogs2/raw_sd_cards/UG07 /home/apan2/sqllite/ug07 25 > ~/log.ug07 &
+
+nohup python ~/final.py ~/tempsharedsolarlogs/home/alp4/sharedsolarlogs2/raw_sd_cards/ug01  /home/apan2/sqllite/ug01 6 > ~/log.ug01 &
+
+nohup python ~/final.py ~/tempsharedsolarlogs/home/alp4/sharedsolarlogs2/raw_sd_cards/ug08  /home/apan2/sqllite/ug08 25 > ~/log.ug08 &
+
+nohup python ~/final.py ~/tempsharedsolarlogs/home/alp4/sharedsolarlogs2/raw_sd_cards/UG04  /home/apan2/sqllite/ug04 25 > ~/log.ug04 &
+
+nohup python ~/final.py ~/tempsharedsolarlogs/home/alp4/sharedsolarlogs2/raw_sd_cards/ug06  /home/apan2/sqllite/ug06 25 > ~/log.ug06 &
+
+nohup python ~/final.py ~/tempsharedsolarlogs/home/alp4/sharedsolarlogs2/raw_sd_cards/UG03  /home/apan2/sqllite/ug03 25 > ~/log.ug03 &

@@ -1,0 +1,14 @@
+Various scripts used to load data into timeseries databases and 
+analyze that data.
+
+Be extremely careful running these scripts on "production" as
+they will overwrite existing data dumps without modifying hard-coded
+configuration variables.  This needs a bit of TLC before being 
+generally useful.  
+
+Load scripts:
+base.py, final.py (sample run in conversion.txt)
+
+The rest of the scripts perform varied analyses on that data (to
+be elaborated).
+
