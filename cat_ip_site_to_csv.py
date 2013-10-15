@@ -6,22 +6,30 @@ def add_site_ip_to_csv_file(logfile, site, ip):
     outfile = logfile.replace(".log", ".csv")
     with open(logfile,'r') as csvinput:
         with open(outfile, 'w') as csvoutput:
-            writer = csv.writer(csvoutput, lineterminator='\n')
-            reader = csv.reader(csvinput)
     
-            all = []
-            row = next(reader)
-            row.insert(0, 'site')
-            row.insert(1, 'ip')
-            all.append(row)
-    
-            for row in reader:
-                row.insert(0, site)
-                row.insert(1, ip)
+            first_line = csvinput.readline()
+            # Simple check for properly formatted file (NOTE:  MAINS files will not have a credit field at the end)
+            if (first_line.startswith("Time Stamp,Watts,Volts,Amps,Watt Hours SC20,Watt Hours Today,Max Watts,Max Volts,Max Amps,Min Watts,Min Volts,Min Amps,Power Factor,Power Cycle,Frequency,Volt Amps,Relay Not Closed,Send Rate,Machine ID,Type")):
+		# reset read ptr
+		csvinput.seek(0)
+                reader = csv.reader(csvinput)
+                writer = csv.writer(csvoutput, lineterminator='\n')
+                all = []
+                row = next(reader)
+                row.insert(0, 'site')
+                row.insert(1, 'ip')
                 all.append(row)
-    
-            writer.writerows(all)
+        
+                for row in reader:
+                    row.insert(0, site)
+                    row.insert(1, ip)
+                    all.append(row)
+        
+                writer.writerows(all)
 
+            else:
+		print "Empty or corrupted file: %s" % logfile
+    
 
 def add_site_ip_to_logs(logs_dir):
 
@@ -31,7 +39,8 @@ def add_site_ip_to_logs(logs_dir):
 		dir_info = dirpath.split("/")
 		site = dir_info[len(dir_info) - 5] # get the site from the dir
 		ip = f[0:f.find(".")] # get the ip from the filename
-		add_site_ip_to_csv_file(os.path.join(dirpath, f), site, ip)
+		full_filename = os.path.join(dirpath, f)
+		add_site_ip_to_csv_file(full_filename, site, ip)
  
 
 
