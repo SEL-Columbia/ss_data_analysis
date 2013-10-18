@@ -16,16 +16,21 @@ def add_site_ip_to_csv_file(logfile, site, ip):
                 writer = csv.writer(csvoutput, lineterminator='\n')
                 all = []
                 row = next(reader)
-                row.insert(0, 'site')
-                row.insert(1, 'ip')
+                row.insert(0, 'line')
+                row.insert(1, 'site')
+                row.insert(2, 'ip')
                 all.append(row)
         
+		line_num = 0
                 for row in reader:
-                    row.insert(0, site)
-                    row.insert(1, ip)
+                    row.insert(0, line_num)
+                    row.insert(1, site)
+                    row.insert(2, ip)
                     all.append(row)
+                    line_num = line_num + 1
         
                 writer.writerows(all)
+                line_num = 0
 
             else:
 		print "Empty or corrupted file: %s" % logfile
