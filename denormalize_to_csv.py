@@ -55,23 +55,26 @@ def write_denormalized_csv(logfile, site, ip):
                 all = []
                 has_credit = True
                 # handle the header row
-                row = next(reader)
+                existing_header_row = next(reader)
+                new_header_row = []
+                # add the new denormalized fields to the new header
+                new_header_row.append('line_num')
+                new_header_row.append('site_id')
+                new_header_row.append('ip_addr')
+               		
                 # If the header row doesn't contain the Credit field, add it
-		if row[-1] != 'Credit':
-                    row.append('Credit')
+		if existing_header_row[-1] != 'Credit':
+                    existing_header_row.append('Credit')
                     has_credit = False
 
                 # convert field names
-                for field in row:
+                for field in existing_header_row:
                     if field not in FIELD_MAP:
                         sys.stderr.write("Erroneous field: %s in file: %s skipping..." % (field, logfile))
                     else:
-                        all.append(FIELD_MAP[field])
+                        new_header_row.append(FIELD_MAP[field])
 
-                row.insert(0, 'line_num')
-                row.insert(1, 'site_id')
-                row.insert(2, 'ip_addr')
-                all.append(row)
+                all.append(new_header_row)
         
 		line_num = 0
                 for row in reader:
@@ -79,7 +82,8 @@ def write_denormalized_csv(logfile, site, ip):
                     row.insert(1, site)
                     row.insert(2, ip)
                     # in case there was no credit field in the input file, make it 0
-                    row.append("0")
+                    if not has_credit:
+                        row.append("0")
                     all.append(row)
                     
                     line_num = line_num + 1
