@@ -1,6 +1,7 @@
 import os
 import datetime
 import csv
+import sys
 
 """
 denormalize_to_csv.py
@@ -13,6 +14,31 @@ description:  Script to take a directory of sharedsolar log files
               of the same structure without losing any information
               (while duplicating some...hence "denormalize")
 """
+
+FIELD_MAP = {
+             'Time Stamp': 'time_stamp',
+             'Watts': 'watts',
+             'Volts': 'volts',
+             'Amps': 'amps',
+             'Watt Hours SC20': 'watt_hours_sc20',
+             'Watt Hours Today': 'watt_hours_today',
+             'Max Watts': 'max_watts',
+             'Max Volts': 'max_volts',
+             'Max Amps': 'max_amps',
+             'Min Watts': 'min_watts',
+             'Min Volts': 'min_volts',
+             'Min Amps': 'min_amps',
+             'Power Factor': 'power_factor',
+             'Power Cycle': 'power_cycle',
+             'Frequency': 'frequency',
+             'Volt Amps': 'volt_amps',
+             'Relay Not Closed': 'relay_not_closed',
+             'Send Rate': 'send_rate',
+             'Machine ID': 'machine_id',
+             'Type': 'circuit_type',
+             'Credit': 'credit'
+}
+
 
 def write_denormalized_csv(logfile, site, ip):
     outfile = logfile.replace(".log", ".csv")
@@ -27,7 +53,21 @@ def write_denormalized_csv(logfile, site, ip):
                 reader = csv.reader(csvinput)
                 writer = csv.writer(csvoutput, lineterminator='\n')
                 all = []
+                has_credit = True
+                # handle the header row
                 row = next(reader)
+                # If the header row doesn't contain the Credit field, add it
+		if row[-1] != 'Credit':
+                    row.append('Credit')
+                    has_credit = False
+
+                # convert field names
+                for field in row:
+                    if field not in FIELD_MAP:
+                        sys.stderr.write("Erroneous field: %s in file: %s skipping..." % (field, logfile))
+                    else:
+                        all.append(FIELD_MAP[field])
+
                 row.insert(0, 'line_num')
                 row.insert(1, 'site_id')
                 row.insert(2, 'ip_addr')
@@ -38,14 +78,17 @@ def write_denormalized_csv(logfile, site, ip):
                     row.insert(0, line_num)
                     row.insert(1, site)
                     row.insert(2, ip)
+                    # in case there was no credit field in the input file, make it 0
+                    row.append("0")
                     all.append(row)
+                    
                     line_num = line_num + 1
         
                 writer.writerows(all)
                 line_num = 0
 
             else:
-		print "Empty or corrupted file: %s" % logfile
+		sys.stderr.write("Empty or corrupted file: %s\n" % logfile)
     
 
 def denormalize_to_csv(logs_dir):
