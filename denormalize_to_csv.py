@@ -2,7 +2,19 @@ import os
 import datetime
 import csv
 
-def add_site_ip_to_csv_file(logfile, site, ip):
+"""
+denormalize_to_csv.py
+
+usage:  python denormalize_to_csv.py logs_dir
+
+description:  Script to take a directory of sharedsolar log files
+              in csv format and denormalizes them such that they
+              can be concatenated together into "one big table"
+              of the same structure without losing any information
+              (while duplicating some...hence "denormalize")
+"""
+
+def write_denormalized_csv(logfile, site, ip):
     outfile = logfile.replace(".log", ".csv")
     with open(logfile,'r') as csvinput:
         with open(outfile, 'w') as csvoutput:
@@ -16,9 +28,9 @@ def add_site_ip_to_csv_file(logfile, site, ip):
                 writer = csv.writer(csvoutput, lineterminator='\n')
                 all = []
                 row = next(reader)
-                row.insert(0, 'line')
-                row.insert(1, 'site')
-                row.insert(2, 'ip')
+                row.insert(0, 'line_num')
+                row.insert(1, 'site_id')
+                row.insert(2, 'ip_addr')
                 all.append(row)
         
 		line_num = 0
@@ -36,23 +48,23 @@ def add_site_ip_to_csv_file(logfile, site, ip):
 		print "Empty or corrupted file: %s" % logfile
     
 
-def add_site_ip_to_logs(logs_dir):
+def denormalize_to_csv(logs_dir):
 
     for (dirpath,dirnames,filenames) in os.walk(logs_dir):
         for f in filenames:
             if f.endswith(".log"):
 		dir_info = dirpath.split("/")
-		site = dir_info[len(dir_info) - 5] # get the site from the dir
+                # Note:  dir_info contents are blah/Site/YYYY/MM/DD/HH
+		site = dir_info[-5] # get the site from the dir (site is always 5 dirs up in the path)
 		ip = f[0:f.find(".")] # get the ip from the filename
 		full_filename = os.path.join(dirpath, f)
-		add_site_ip_to_csv_file(full_filename, site, ip)
+		write_denormalized_csv(full_filename, site, ip)
  
 
 
 if __name__=="__main__":
-
     import sys
     assert len(sys.argv) == 2, \
-	"Usage: python cat_site_to_csv.py logs_dir"
+	"Usage: python denormalize_to_csv.py logs_dir"
     logs_dir = sys.argv[1]
-    add_site_ip_to_logs(logs_dir) 
+    denormalize_to_csv(logs_dir) 
